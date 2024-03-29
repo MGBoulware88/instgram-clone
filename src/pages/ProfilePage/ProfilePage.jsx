@@ -8,7 +8,9 @@ import useGetUserProfileByUsername from "../../hooks/useGetUserProfileByUsername
 const ProfilePage = () => {
   const { username } = useParams();
   const { isLoading, userProfile } = useGetUserProfileByUsername(username);
+  const isDoneLoadingAndFoundUserProfile = !isLoading && userProfile;
   const userNotFound = !isLoading && !userProfile;
+
   if (userNotFound) {
     return <UserNotFound />
   }
@@ -23,7 +25,7 @@ const ProfilePage = () => {
         mx={"auto"}
         flexDirection={"column"}
       >
-        {!isLoading && userProfile && <ProfileHeader />}
+        {isDoneLoadingAndFoundUserProfile && <ProfileHeader />}
         {isLoading && <ProfileHeaderSkeleton />}
       </Flex>
       <Flex

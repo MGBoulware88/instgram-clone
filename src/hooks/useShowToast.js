@@ -13,7 +13,7 @@ const useShowToast = () => {
     })
   }, [toast])
 
-  return showToast
+  return showToast;
 }
 
-export default useShowToast
+export default useShowToast;

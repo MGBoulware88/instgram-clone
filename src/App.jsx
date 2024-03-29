@@ -9,7 +9,7 @@ import AuthPageRegisterFirst from "./pages/AuthPage/AuthPageRegisterFirst";
 
 function App() {
   const [authUser] = useAuthState(auth);
-  console.log(authUser);
+  console.log(`Logged in user: ${authUser?.username}`);
   return (
     <PageLayout>
       <Routes>

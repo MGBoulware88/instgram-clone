@@ -14,7 +14,7 @@ const EditProfile = ({ isOpen, onClose }) => {
   const authUser = useAuthStore(state => state.user);
   const fileRef = useRef();
   const {selectedFile, setSelectedFile, handleImageChange} = usePreviewImage();
-  const {isUpdating, editProfile} = useEditProfile();
+  const {editProfile, isUpdating} = useEditProfile();
   const showToast = useShowToast();
 
   const handleEditProfile = async () => {

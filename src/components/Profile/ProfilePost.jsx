@@ -1,14 +1,56 @@
-import { Avatar, Box, Divider, Flex, GridItem, Image, Modal, ModalBody, ModalCloseButton, ModalContent, ModalOverlay, Text, VStack, useDisclosure } from "@chakra-ui/react"
+import { Avatar, Button, Divider, Flex, GridItem, Image, Modal, ModalBody, ModalCloseButton, ModalContent, ModalOverlay, Text, VStack, useDisclosure } from "@chakra-ui/react"
 import { AiFillHeart } from "react-icons/ai"
 import { FaComment } from "react-icons/fa";
 import { MdDelete } from "react-icons/md";
 import Comment from "../Comment/Comment";
 import PostFooter from "../FeedPosts/PostFooter";
+import useUserProfileStore from "../../store/userProfileStore";
+import useAuthStore from "../../store/authStore";
+import useShowToast from "../../hooks/useShowToast";
+import { useState } from "react";
+import { deleteObject, ref } from "firebase/storage";
+import { firestore, storage } from "../../firebase/firebase";
+import { arrayRemove, deleteDoc, doc, updateDoc } from "firebase/firestore";
+import usePostStore from "../../store/postStore";
+// import Caption from "../Comment/Caption";
 
 const ProfilePost = ({ post }) => {
   const { isOpen, onOpen, onClose } = useDisclosure();
+  const { userProfile } = useUserProfileStore();
+  const authUser = useAuthStore((state) => state.user);
+  const showToast = useShowToast();
+  const [isDeleting, setIsDeleting] = useState(false);
+  const deletePost = usePostStore((state) => state.deletePost);
+  const decrementPostsCount = useUserProfileStore((state) => state.deletePost);
 
-  console.log(post);
+  const handleDeletePost = async () => {
+    //confirmation of delete
+    if (!window.confirm("Are you sure you want to delete this post? This cannot be undone.")) return;
+    //disable button while deleting state
+    if (isDeleting) return;
+
+    try {
+      setIsDeleting(true);
+      //delete the post image
+      const imageRef = ref(storage, `posts/${post.id}`);
+      await deleteObject(imageRef);
+      //delete the post itself
+      await deleteDoc(doc(firestore, "posts", post.id));
+      //remove the post id from the user's posts
+      const userRef = doc(firestore, "users", authUser.uid);
+      await updateDoc(userRef, { posts: arrayRemove(post.id) });
+      //remove the post from state
+      deletePost(post.id)
+      decrementPostsCount(post.id);
+
+      showToast("Success", "Post deleted.", "success")
+
+    } catch (error) {
+      showToast("Error", error.message, "error");
+    } finally {
+      setIsDeleting(false);
+    }
+  }
 
   return (
     <>
@@ -38,11 +80,11 @@ const ProfilePost = ({ post }) => {
           <Flex alignItems={"center"} justifyContent={"center"} gap={50}>
             <Flex>
               <AiFillHeart size={20} />
-              <Text fontWeight={"bold"} ml={2}>7</Text>
+              <Text fontWeight={"bold"} ml={2}>{post.likes.length}</Text>
             </Flex>
             <Flex>
               <FaComment size={20} />
-              <Text fontWeight={"bold"} ml={2}>7</Text>
+              <Text fontWeight={"bold"} ml={2}>{post.comments.length}</Text>
             </Flex>
           </Flex>
         </Flex>
@@ -55,43 +97,54 @@ const ProfilePost = ({ post }) => {
         <ModalContent>
           <ModalCloseButton />
           <ModalBody bgColor={"black"} pb={5}>
-            <Flex gap={4} w={{ base: "90%", sm: "70%", md: "full" }} mx={"auto"}>
-              <Box
+            <Flex gap={4} w={{ base: "90%", sm: "70%", md: "full" }} maxH={"90vh"} minH={"50vh"} mx={"auto"}>
+              <Flex
                 borderRadius={4}
                 overflow={"hidden"}
                 border={"1px solid"}
                 borderColor={"whiteAlpha.500"}
                 flex={1.5}
+                justifyContent={"center"}
+                alignItems={"center"}
               >
                 <Image src={post.imageURL} alt="profile post" />
-              </Box>
+              </Flex>
               <Flex flex={1} flexDir={"column"} px={10} display={{ base: "none", md: "flex" }}>
                 <Flex alignItems={"center"} justifyContent={"space-between"}>
                   <Flex alignItems={"center"} gap={4}>
-                    <Avatar src="/profilepic.png" size={"sm"} name="gray" />
+                    <Avatar src={userProfile?.profilePicURL || ""} size={"sm"} name="gray" />
                     <Text fontWeight={"bold"} fontSize={12}>
-                      gray
+                      {userProfile?.username || "John Doe"}
                     </Text>
                   </Flex>
-                  <Box _hover={{ bg: "whiteAlpha.300", color: "red.600" }} borderRadius={4} p={1}>
-                    <MdDelete size={20} cursor={"pointer"} />
-                  </Box>
+                  {/* 
+                    Added optional chaining to this check because you can view posts without a logged in user.
+                    Now, it handles all 3 use cases:
+                      logged in user is viewing own post
+                      logged in user is viewing another user's post
+                      a visitor is viewing a post
+                  */}
+                  {authUser?.uid === userProfile.uid && (
+                    <Button _hover={{ bg: "whiteAlpha.300", color: "red.600" }} borderRadius={4} p={1} size={"sm"} bg={"transparent"}
+                      onClick={handleDeletePost}
+                      isLoading={isDeleting}
+                    >
+                      <MdDelete size={20} cursor={"pointer"} />
+                    </Button>
+                  )}
                 </Flex>
                 <Divider my={4} bg={"gray.500"} />
 
                 <VStack w={"full"} alignItems={"start"} maxH={"350px"} overflowY={"auto"}>
-                  <Comment
-                    createdAt="1d ago"
-                    username="gray"
-                    profilePic="/profilepic.png"
-                    text={"Dummy images from unsplash"}
-                  />
-
-
+                  {post.comments.map(comment => {
+                    return (
+                    <Comment key={comment.id} comment={comment} />
+                  )
+                  })}
                 </VStack>
                 <Divider my={4} bg={"gray.500"} />
 
-                <PostFooter isProfilePage={true}/>
+                <PostFooter isProfilePage={true} post={post} />
               </Flex>
             </Flex>
           </ModalBody>

@@ -20,7 +20,7 @@ const useSignUpWithEmailAndPassword = () => {
     const querySnapshot = await getDocs(q);
 
     if (!querySnapshot.empty) {
-      return showToast("Error", "Username already exist.", "error");
+      return showToast("Error", "Username already exists.", "error");
     }
 
     createUserWithEmailAndPassword(inputs.email, inputs.password)

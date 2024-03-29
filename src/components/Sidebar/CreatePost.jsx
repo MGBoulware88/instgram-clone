@@ -10,7 +10,7 @@ import useUserProfileStore from "../../store/userProfileStore";
 import { addDoc, arrayUnion, collection, doc, updateDoc } from "firebase/firestore";
 import { firestore, storage } from "../../firebase/firebase";
 import { getDownloadURL, ref, uploadString } from "firebase/storage";
-// import { useLocation } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 
 const CreatePost = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -96,7 +96,8 @@ function useCreatePost() {
   const authUser = useAuthStore(state => state.user);
   const createPost = usePostStore(state => state.createPost)
   const addPost = useUserProfileStore(state => state.addPost);
-  // const { pathname } = useLocation();
+  const userProfile = useUserProfileStore();
+  const { pathname } = useLocation();
 
   const handleCreatePost = async (selectedFile, caption) => {
     if (!selectedFile) {
@@ -125,8 +126,9 @@ function useCreatePost() {
       await updateDoc(postDocRef, { imageURL: downloadURL });
 
       newPost.imageURL = downloadURL;
-      createPost({ ...newPost, id: postDocRef.uid });
-      addPost({ ...newPost, id: postDocRef.uid });
+
+      userProfile.uid === authUser.uid && createPost({ ...newPost, id: postDocRef.uid });
+      (pathname !== "/" && userProfile.uid === authUser.uid) && addPost({ ...newPost, id: postDocRef.uid });
 
       showToast("Hurray!", "Post Created!", "success");
 

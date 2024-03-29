@@ -19,10 +19,10 @@ const useGetUserProfileByUsername = (username) => {
         if (querySnapshot.empty) return setUserProfile(null);
 
         let userDoc;
-        querySnapshot.forEach(doc => userDoc = doc.data())
+        querySnapshot.forEach(doc => userDoc = doc.data());
 
         setUserProfile(userDoc);
-        console.log(userDoc);
+        console.log(`Found user doc from useGetUserProfileByUsername hook: ${userDoc}`);
 
       } catch (error) {
         showToast("Error", error.message, "error")
@@ -33,7 +33,7 @@ const useGetUserProfileByUsername = (username) => {
     getUserProfile();
   }, [setUserProfile, username, showToast])
 
-  return { isLoading, userProfile }
+  return { isLoading, userProfile };
 };
 
-export default useGetUserProfileByUsername
+export default useGetUserProfileByUsername;

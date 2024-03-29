@@ -35,11 +35,10 @@ const useFollowUser = (userId) => {
           ...authUser,
           following: authUser.following.filter((uid) => uid !== userId),
         });
-        if (userProfile)
-          setUserProfile({
-            ...userProfile,
-            followers: userProfile.followers.filter((uid) => uid !== authUser.uid),
-          });
+        userProfile && setUserProfile({
+          ...userProfile,
+          followers: userProfile.followers.filter((uid) => uid !== authUser.uid),
+        });
 
         localStorage.setItem(
           "user-info",
@@ -57,11 +56,10 @@ const useFollowUser = (userId) => {
           following: [...authUser.following, userId],
         });
 
-        if (userProfile)
-          setUserProfile({
-            ...userProfile,
-            followers: [...userProfile.followers, authUser.uid],
-          });
+        userProfile && setUserProfile({
+          ...userProfile,
+          followers: [...userProfile.followers, authUser.uid],
+        });
 
         localStorage.setItem(
           "user-info",
@@ -72,9 +70,8 @@ const useFollowUser = (userId) => {
         );
         setIsFollowing(true);
       }
-
     } catch (error) {
-      showToast("Error uFU", error.message, "error")
+      showToast("Error", error.message, "error")
     } finally {
       setIsUpdating(false);
     }
