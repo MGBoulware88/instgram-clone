@@ -19,10 +19,12 @@ const Caption = ({ post }) => {
 							{userProfile.username}
 						</Text>
 					</Link>
-					<Text fontSize={14}>{post.caption}</Text>
+					<Text fontSize={14}>
+            {post.caption} <span style={{color: "gray", fontSize: 12}}>{convertTimestamp(post.createdAt)}</span>
+          </Text>
 				</Flex>
 				<Text fontSize={12} color={"gray"}>
-					{convertTimestamp(post.createdAt)}
+					
 				</Text>
 			</Flex>
 		</Flex>

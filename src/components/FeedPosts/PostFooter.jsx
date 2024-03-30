@@ -1,16 +1,20 @@
-import { Box, Button, Flex, Input, InputGroup, InputRightElement, Text } from "@chakra-ui/react"
+import { Box, Button, Flex, Input, InputGroup, InputRightElement, Text, useDisclosure } from "@chakra-ui/react"
 import { useRef, useState } from "react"
 import { CommentLogo, NotificationsLogo, UnlikeLogo } from "../../assets/constants";
 import usePostComment from "../../hooks/usePostComment";
 import useAuthStore from "../../store/authStore";
 import useLikeOrUnlikePost from "../../hooks/useLikeOrUnlikePost";
+import useTimestampConverter from "../../hooks/useTimestampConverter";
+import CommentsModal from "../Modals/CommentsModal";
 
-const PostFooter = ({ post, username, isProfilePage }) => {
+const PostFooter = ({ post, isProfilePage, creator }) => {
   const { isCommenting, handlePostComment } = usePostComment();
   const [comment, setComment] = useState("");
   const authUser = useAuthStore(state => state.user);
   const commentRef = useRef();
-  const {isUpdating, isLiked, likes, handleLikePost} = useLikeOrUnlikePost(post);
+  const { isUpdating, isLiked, likes, handleLikePost } = useLikeOrUnlikePost(post);
+  const convertTimestamp = useTimestampConverter();
+  const { isOpen, onOpen, onClose } = useDisclosure()
 
   const onPostComment = async () => {
 
@@ -18,7 +22,7 @@ const PostFooter = ({ post, username, isProfilePage }) => {
     setComment("");
   }
 
-  
+
 
   return (
     <Box mb={8} mt={"auto"}>
@@ -31,20 +35,28 @@ const PostFooter = ({ post, username, isProfilePage }) => {
         </Box>
       </Flex>
       <Text fontWeight={600} fontSize={"sm"}>
-        { likes === 1 && `${likes} like` }
-        { likes > 1 && `${likes} likes` }
+        {likes === 1 && `${likes} like`}
+        {likes > 1 && `${likes} likes`}
       </Text>
+      {isProfilePage && (
+        <Text fontSize={"12"} color={"gray"}>
+          Posted {convertTimestamp(post.createdAt)}
+        </Text>
+      )}
       {!isProfilePage && (
         <>
           <Text fontWeight={700} fontSize={"sm"}>
-            {username}{" "}
+            {creator?.username}{" "}
             <Text fontWeight={400} as="span">
-              Feeling good
+              {post.caption}
             </Text>
           </Text>
-          <Text fontSize="sm" color={"gray"}>
-            View all 1,000 comments
-          </Text>
+          {post.comments.length > 0 && (
+            <Text fontSize="sm" color={"gray"} cursor={"pointer"} onClick={onOpen}>
+              View all {post.comments.length} comments
+            </Text>
+          )}
+          {isOpen && <CommentsModal isOpen={isOpen} onClose={onClose} post={post} />}
         </>
       )}
 

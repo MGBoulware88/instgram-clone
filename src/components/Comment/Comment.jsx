@@ -20,11 +20,8 @@ const Comment = ({ comment }) => {
               {userProfile.username}
             </Text>
           </Link>
-          <Text fontSize={14}>
-            {comment.comment}
-          </Text>
-          <Text fontSize={12} color={"gray"}>
-            {convertTimestamp(comment.createdAt)}
+          <Text fontSize={"14"}>
+            {`${comment.comment} `}<span style={{ color: "gray", fontSize: 12 }}>{convertTimestamp(comment.createdAt)}</span>
           </Text>
         </Flex>
       </Flex>

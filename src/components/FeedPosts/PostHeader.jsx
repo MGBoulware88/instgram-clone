@@ -1,9 +1,11 @@
-import { Avatar, Box, Flex, Text, Skeleton, SkeletonCircle } from "@chakra-ui/react";
+import { Avatar, Box, Flex, Button, Skeleton, SkeletonCircle } from "@chakra-ui/react";
 import useTimestampConverter from "../../hooks/useTimestampConverter";
 import { Link } from "react-router-dom";
+import useFollowUser from "../../hooks/useFollowUser";
 
 const PostHeader = ({ post, creator }) => {
   const convertTimestamp = useTimestampConverter();
+  const {isFollowing, isUpdating, handleFollowUser} = useFollowUser(post.createdBy);
 
   return (
     <Flex justifyContent={"space-between"} alignItems={"center"} w={"full"} my={2}>
@@ -32,15 +34,19 @@ const PostHeader = ({ post, creator }) => {
         </Flex>
       </Flex>
       <Box cursor={"pointer"}>
-        <Text
+        <Button
           fontSize={12}
+          size={"xs"}
+          background={"transparent"}
           color={"blue.500"}
           fontWeight={"bold"}
           _hover={{ color: "white" }}
           transition={"0.2s ease-in-out"}
+          onClick={handleFollowUser}
+          isUpdating={isUpdating}
         >
-          Unfollow
-        </Text>
+          {isFollowing ? "Unfollow" : "Follow"}
+        </Button>
       </Box>
     </Flex>
   )
