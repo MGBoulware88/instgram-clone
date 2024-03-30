@@ -7,7 +7,7 @@ import SuggestedUser from "../SuggestedUsers/SuggestedUser";
 const Search = () => {
   const {isOpen, onOpen, onClose} = useDisclosure();
   const {isLoading, user, setUser, getUserProfile} = useSearchUser();
-  //initial ref is ChakraUI's solution for auto focusing the input field of choice
+  //initial ref is ChakraUI's solution for auto focusing the input field of choice on opening modal
   const initialRef = useRef(null);
   const [userToSearch, setUserToSearch] = useState("");
 

@@ -12,6 +12,7 @@ import { deleteObject, ref } from "firebase/storage";
 import { firestore, storage } from "../../firebase/firebase";
 import { arrayRemove, deleteDoc, doc, updateDoc } from "firebase/firestore";
 import usePostStore from "../../store/postStore";
+import Caption from "../Comment/Caption";
 // import Caption from "../Comment/Caption";
 
 const ProfilePost = ({ post }) => {
@@ -124,7 +125,7 @@ const ProfilePost = ({ post }) => {
                       logged in user is viewing another user's post
                       a visitor is viewing a post
                   */}
-                  {authUser?.uid === userProfile.uid && (
+                  {authUser?.uid === userProfile?.uid && (
                     <Button _hover={{ bg: "whiteAlpha.300", color: "red.600" }} borderRadius={4} p={1} size={"sm"} bg={"transparent"}
                       onClick={handleDeletePost}
                       isLoading={isDeleting}
@@ -136,6 +137,7 @@ const ProfilePost = ({ post }) => {
                 <Divider my={4} bg={"gray.500"} />
 
                 <VStack w={"full"} alignItems={"start"} maxH={"350px"} overflowY={"auto"}>
+                  {post.caption && <Caption post={post}/>}
                   {post.comments.map(comment => {
                     return (
                     <Comment key={comment.id} comment={comment} />

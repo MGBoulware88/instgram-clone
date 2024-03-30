@@ -1,29 +1,47 @@
-import { Avatar, Box, Flex, Text } from "@chakra-ui/react"
+import { Avatar, Box, Flex, Text, Skeleton, SkeletonCircle } from "@chakra-ui/react";
+import useTimestampConverter from "../../hooks/useTimestampConverter";
+import { Link } from "react-router-dom";
 
-const PostHeader = ({username, avatar}) => {
+const PostHeader = ({ post, creator }) => {
+  const convertTimestamp = useTimestampConverter();
+
   return (
     <Flex justifyContent={"space-between"} alignItems={"center"} w={"full"} my={2}>
-        <Flex alignItems={"center"} gap={2}>
-            <Avatar src={avatar} alt="user profile photo" size={"sm"}/>
-            <Flex fontSize={"12px"} fontWeight={"bold"} gap={2}>
-                {username}{" "}
-                <Box color={"gray.500"}>
-                • 1w
-                </Box>
+      <Flex alignItems={"center"} gap={2}>
+        {creator ? (
+          <Link to={`/${creator.username}`} >
+            <Avatar src={creator.profilePicURL || ""} alt="user profile photo" size={"sm"} />
+          </Link>
 
-            </Flex>
+        ) : (
+          <SkeletonCircle size={"10"} />
+        )}
+        <Flex fontSize={"12px"} fontWeight={"bold"} gap={2}>
+          {creator ? (
+            <Link to={`/${creator?.username}`} >
+              {creator?.username}{" "}
+            </Link>
+
+          ) : (
+            <Skeleton w={"100px"} h={"10px"} />
+          )}
+          <Box color={"gray.500"}>
+            • {convertTimestamp(post.createdAt)}
+          </Box>
+
         </Flex>
-        <Box cursor={"pointer"}>
-            <Text 
-            fontSize={12} 
-            color={"blue.500"} 
-            fontWeight={"bold"} 
-            _hover={{color:"white"}}
-            transition={"0.2s ease-in-out"}
-            >
-                Unfollow
-            </Text>
-        </Box>
+      </Flex>
+      <Box cursor={"pointer"}>
+        <Text
+          fontSize={12}
+          color={"blue.500"}
+          fontWeight={"bold"}
+          _hover={{ color: "white" }}
+          transition={"0.2s ease-in-out"}
+        >
+          Unfollow
+        </Text>
+      </Box>
     </Flex>
   )
 }
