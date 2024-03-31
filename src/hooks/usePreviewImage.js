@@ -4,13 +4,13 @@ import useShowToast from "./useShowToast";
 const usePreviewImage = () => {
   const [selectedFile, setSelectedFile] = useState(null);
   const showToast = useShowToast();
-  const maxFileSizeInBytes = 2 * 1024 * 1024
+  const maxFileSizeInBytes = 4 * 1024 * 1024
 
   const handleImageChange = e => {
     const file = e.target.files[0];
     if (file && file.type.startsWith("image/")) {
       if (file.size > maxFileSizeInBytes) {
-        showToast("File Size Error", "Image must be less than 2MB.", "error");
+        showToast("File Size Error", "Image must be less than 4MB.", "error");
         setSelectedFile(null);
         return;
       }
