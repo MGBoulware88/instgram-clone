@@ -2,6 +2,7 @@ import { Box, Container, Flex, Skeleton, SkeletonCircle, VStack, Text } from "@c
 import FeedPost from "./FeedPost"
 import useGetFeedPosts from "../../hooks/useGetFeedPosts";
 import { RxDoubleArrowRight } from "react-icons/rx";
+import SuggestedUsers from "../SuggestedUsers/SuggestedUsers";
 
 const FeedPosts = () => {
   const { isLoading, posts } = useGetFeedPosts();
@@ -26,9 +27,13 @@ const FeedPosts = () => {
         posts.map(post => (<FeedPost key={post.id} post={post} />))
       )}
       {!isLoading && posts.length === 0 && (
-        <Text fontsize={"lg"} color={"whiteAlpha.800"} margin={"auto"}>
-          You aren&apos;t following anyone. Follow some users to see posts on your home page! <RxDoubleArrowRight />
-        </Text>
+        <>
+          <Text fontsize={"lg"} color={"whiteAlpha.800"} margin={"auto"}>
+            You aren&apos;t following anyone. Follow some users to see posts on your home page! <RxDoubleArrowRight />
+          </Text>
+
+          <SuggestedUsers />
+        </>
       )}
 
     </Container>

@@ -2,6 +2,7 @@ import { Box, Flex, Text, VStack } from "@chakra-ui/react"
 import SuggestedHeader from "./SuggestedHeader"
 import SuggestedUser from "./SuggestedUser"
 import useGetSuggestedUsers from "../../hooks/useGetSuggestedUsers"
+import { Link } from "react-router-dom"
 
 const SuggestedUsers = () => {
   const {isLoading, suggestedUsers} = useGetSuggestedUsers();
@@ -29,7 +30,10 @@ const SuggestedUsers = () => {
 
             <Box
                 fontSize={12} color={"gray.500"} mt={5} alignSelf={"flex-start"}  >
-                © 2024 Built By Gray Boulware
+                © 2024 Built By {" "}
+                <Link to={"https://github.com/MGBoulware88"} target={"_blank"}>
+                <span style={{color: "rgb(66, 153, 196)", fontSize: "12"}}>Gray Boulware</span>
+                </Link>
 
             </Box>
 
